@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+	
+
+	  <table  class="table table-bordered table-striped">
+    <thead>
+      <th>Username</th>
+      <th>Password</th>
+      <th>Secret</th>
+      <th>State</th>
+      <th>Last login</th>
+    </thead>
+    <tbody>
+    {% for user in users %}
+      <tr>
+        <th><a href="{{url_for('main.edit_account', id=user.id)}}">{{ user.name }}</a></th>
+        <td>{{ user.password }}</td>
+        <td>{{ user.secret }}</td>
+        <td>{{ user.state }}</td>
+        <td>{{ user.lastlogin }}</td>
+        <td><a href="{{url_for('main.edit_account', id=user.id)}}" class="btn primary">Edit</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+ 
+{% endblock %}
