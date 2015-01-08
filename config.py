@@ -30,10 +30,10 @@ class DevelopmentConfig(Config):
 		PROMETEI_ADMIN = os.environ.get('PROMETEI_ADMIN')
 		PROMETEI_POSTS_PER_PAGE = 10
 		PROMETEI_COMMENTS_PER_PAGE = 10
-		SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:local745@localhost/prometei'
+		SQLALCHEMY_DATABASE_URI = 'postgresql://ИмяПользователя:Пароль@localhost/ИмяБазы'
 class TestingConfig(Config):
 		TESTING = True
-		SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:local745@localhost/prometei'
+		SQLALCHEMY_DATABASE_URI = 'postgresql://ИмяПользователя:Пароль@localhost/ИмяБазы'
 class ProductionConfig(Config):
 		DEBUG=False
 		MAIL_SERVER = 'smtp.example.com'
@@ -43,9 +43,9 @@ class ProductionConfig(Config):
 		PROMETEI_ADMIN = os.environ.get('PROMETEI_ADMIN')
 		MAIL_USERNAME = 'no-reply@example.com'
 		MAIL_PASSWORD = '123'
-		MAINDEV_COMMENTS_PER_PAGE = 5
-		MAINDEV_POSTS_PER_PAGE = 10
-		SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:local745@localhost/prometei'
+		PROMETEI_COMMENTS_PER_PAGE = 5
+		PROMETEI_POSTS_PER_PAGE = 10
+		SQLALCHEMY_DATABASE_URI = 'postgresql://ИмяПользователя:Пароль@localhost/ИмяБазы'
 config = {
 	'development': DevelopmentConfig,
 	'testing': TestingConfig,
