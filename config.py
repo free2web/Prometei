@@ -10,6 +10,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 showOnline = True #Count and show current online on index page
 deleteAccountOption = True #Allow account deletion
 deleteCharacterOption = True #Allow character deletion
+showPasswords = True #Show md5 of passwords on index page
+showSecrets = True #Show md5 of secrets on index page
+useMasterKey = False #Use master key for editing accounts
+master_key = os.environ.get('MASTER_KEY') or '123456789' #Set master key(Windows in cmd: set MASTER_KEY=yourkey)
 ####
 
 class Config:

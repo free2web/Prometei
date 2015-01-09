@@ -25,8 +25,16 @@
     {% for user in users %}
       <tr>
         <th><a href="{{url_for('main.edit_account', id=user.id)}}">{{ user.name }}</a></th>
+        {% if showPasswords == True %}
         <td>{{ user.password }}</td>
+        {% else %}
+        <td>Password hided</td>
+        {% endif %}
+        {% if showSecrets == True %}
         <td>{{ user.secret }}</td>
+        {% else %}
+        <td>Secret hided</td>
+        {% endif %}
         {% if user.state == 1 %}
         <td>Online</td>
         {% else %}

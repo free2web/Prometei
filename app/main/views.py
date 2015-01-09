@@ -18,7 +18,15 @@ def index():
 				online += 1
 	else:
 		online = 'None'
-	return render_template('index.html', users=users, online=online)
+	if config.showPasswords == True:
+		showPasswords = True
+	else:
+		showPasswords = False
+	if config.showSecrets == True:
+		showSecrets = True
+	else:
+		showSecrets = False
+	return render_template('index.html', users=users, online=online, showPasswords=showPasswords, showSecrets=showSecrets)
 @main.route('/create', methods=['GET', 'POST'])
 def create_account():
 	form = CreateAccountForm()
@@ -54,13 +62,15 @@ def edit_account(id):
 	user = User.query.get_or_404(id)
 	form = EditAccountForm(user=user)
 	if form.validate_on_submit():
+		
 		user.name = form.name.data
 		#user.password = hashlib.md5(form.password.data).hexdigest()
 		user.state = form.state.data
 		user.secret = hashlib.md5(form.secret.data).hexdigest()
 		db.session.add(user)
 		db.session.commit()
-		flash(u'Profile updated')
+		flash('Profile updated')
+		print config.master_key
 		return redirect(url_for('.index'))
 	form.name.data = user.name
 	form.state.data = user.state
@@ -71,21 +81,22 @@ def edit_character(id):
 	character = Character.query.get_or_404(id)
 	form = EditCharacterForm(character=character)
 	if form.validate_on_submit():
-		character.account_id = form.account_id.data
-		character.name = form.name.data
-		character.job = 0
-		character.race = form.race.data
-		character.level = form.level.data
-		character.str = 1
-		character.agi = 1
-		character.con = 1
-		character.spr = 1
-		character.acc = 1
+		if form.master_key.data == config.master_key:
+			character.account_id = form.account_id.data
+			character.name = form.name.data
+			character.job = 0
+			character.race = form.race.data
+			character.level = form.level.data
+			character.str = 1
+			character.agi = 1
+			character.con = 1
+			character.spr = 1
+			character.acc = 1
 
-		db.session.add(character)
-		db.session.commit()
-		flash(u'Character updated')
-		return redirect(url_for('.characters'))
+			db.session.add(character)
+			db.session.commit()
+			flash(u'Character updated')
+			return redirect(url_for('.characters'))
 
 	form.account_id.data = character.account_id
 	form.name.data = character.name
