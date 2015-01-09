@@ -26,6 +26,7 @@ class Character(db.Model):
 	items = db.Column(db.LargeBinary)
 	str = db.Column(db.Integer)
 	con = db.Column(db.Integer)
+	agi = db.Column(db.Integer)
 	spr = db.Column(db.Integer)
 	acc = db.Column(db.Integer)
 	deleted = db.Column(db.Integer)

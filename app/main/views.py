@@ -11,7 +11,11 @@ import hashlib
 @main.route('/', methods=['GET', 'POST'])
 def index():
 	users = User.query.all()
-	return render_template('index.html', users=users)
+	online = 0
+	for user in users:
+		if user.state == 1:
+			online += 1
+	return render_template('index.html', users=users, online=online)
 @main.route('/create', methods=['GET', 'POST'])
 def create_account():
 	form = CreateAccountForm()
@@ -30,7 +34,7 @@ def create_char():
 	form = CreateCharacterForm()
 	if form.validate_on_submit():
 		newChar = Character(account_id=form.account_id.data, name=form.name.data, job=0, race=form.race.data, level=form.level.data, map="Argent City", 
-			x=217000, y=278100, hair=2247, str=1, con=1, spr=1, acc=1, deleted=0)
+			x=217000, y=278100, hair=2247, str=1, agi=1, con=1, spr=1, acc=1, deleted=0)
 		db.session.add(newChar)
 		db.session.commit()
 		flash('Character created!')
@@ -70,6 +74,7 @@ def edit_character(id):
 		character.race = form.race.data
 		character.level = form.level.data
 		character.str = 1
+		character.agi = 1
 		character.con = 1
 		character.spr = 1
 		character.acc = 1
