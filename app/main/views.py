@@ -72,9 +72,13 @@ def edit_account(id):
 		flash('Profile updated')
 		print config.master_key
 		return redirect(url_for('.index'))
+
 	form.name.data = user.name
 	form.state.data = user.state
-	form.secret.data = user.secret
+	if config.showSecrets == True:
+		form.secret.data = user.secret
+	else:
+		form.secret.data = 'Secret hided, check your config file'
 	return render_template('edit_account.html', form=form, user=user)
 @main.route('/editchar/<int:id>', methods=['GET', 'POST'])
 def edit_character(id):
