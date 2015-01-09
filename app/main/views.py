@@ -5,7 +5,7 @@ from flask import render_template, session, redirect, url_for, abort, g, current
 from . import main
 from .. import db
 from ..models import User, Character
-from .forms import CreateAccountForm, EditAccountForm, EditCharacterForm, CreateCharacterForm
+from .forms import CreateAccountForm, EditAccountForm, EditCharacterForm
 import hashlib
 
 @main.route('/', methods=['GET', 'POST'])
@@ -21,26 +21,14 @@ def create_account():
 		
 		db.session.add(newAccount)		
 		db.session.commit()
-		flash(u'Account created!')
+		flash(u'Аккаунт создан!')
 		return redirect(url_for('.index'))
 	
 	return render_template('create.html', form=form)
-@main.route('/create-char', methods=['GET', 'POST'])
-def create_char():
-	form = CreateCharacterForm()
-	if form.validate_on_submit():
-		newChar = Character(account_id=form.account_id.data, name=form.name.data, job=0, race=form.race.data, level=form.level.data, map="Argent City", 
-			x=217000, y=278100, hair=2247, str=1, con=1, spr=1, acc=1, deleted=0)
-		db.session.add(newChar)
-		db.session.commit()
-		flash('Character created!')
-		return redirect(url_for('.index'))
-	return render_template('char_create.html', form=form)
 @main.route('/characters')
 def characters():
 	characters = Character.query.all()
-	users = User.query.all()
-	return render_template('characters.html', characters=characters, users=users)
+	return render_template('characters.html', characters=characters)
 
 @main.route('/editaccount/<int:id>', methods=['GET', 'POST'])
 def edit_account(id):
@@ -48,39 +36,30 @@ def edit_account(id):
 	form = EditAccountForm(user=user)
 	if form.validate_on_submit():
 		user.name = form.name.data
-		#user.password = hashlib.md5(form.password.data).hexdigest()
+		user.password = hashlib.md5(form.password.data).hexdigest()
 		user.state = form.state.data
 		user.secret = hashlib.md5(form.secret.data).hexdigest()
 		db.session.add(user)
 		db.session.commit()
-		flash(u'Profile updated')
+		flash(u'Профиль пользователя успешно обновлен')
 		return redirect(url_for('.index'))
-	form.name.data = user.name
-	form.state.data = user.state
-	form.secret.data = user.secret
 	return render_template('edit_account.html', form=form, user=user)
 @main.route('/editchar/<int:id>', methods=['GET', 'POST'])
 def edit_character(id):
 	character = Character.query.get_or_404(id)
 	form = EditCharacterForm(character=character)
 	if form.validate_on_submit():
-		character.account_id = form.account_id.data
 		character.name = form.name.data
-		character.job = 0
+		character.job = form.job.data
 		character.race = form.race.data
 		character.level = form.level.data
-		character.str = 1
-		character.con = 1
-		character.spr = 1
-		character.acc = 1
+		character.str = form.str.data
+		character.con = form.con.data
+		character.spr = form.spr.data
+		character.acc = form.acc.data
 
 		db.session.add(character)
 		db.session.commit()
-		flash(u'Character updated')
-		return redirect(url_for('.characters'))
-
-	form.account_id.data = character.account_id
-	form.name.data = character.name
-	form.race.data = character.race
-	form.level.data = character.level
+		flash(u'Профиль пользователя успешно обновлен')
+		return redirect(url_for('.index'))
 	return render_template('edit_char.html', form=form, character=character)
