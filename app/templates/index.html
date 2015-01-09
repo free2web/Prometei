@@ -17,7 +17,11 @@
         <td>{{ user.password }}</td>
         <td>{{ user.secret }}</td>
         <td>{{ user.state }}</td>
-        <td>{{ user.lastlogin }}</td>
+        {% if user.last_login != None%}
+        <td>{{ user.last_login.strftime('%Y-%m-%d at %H:%M ') }}</td>
+        {% else %}
+        <td>None</td>
+        {% endif %}
         <td><a href="{{url_for('main.edit_account', id=user.id)}}" class="btn primary">Edit</a></td>
       </tr>
     {% endfor %}
