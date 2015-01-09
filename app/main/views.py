@@ -7,14 +7,17 @@ from .. import db
 from ..models import User, Character
 from .forms import CreateAccountForm, EditAccountForm, EditCharacterForm, CreateCharacterForm
 import hashlib
-
+import config
 @main.route('/', methods=['GET', 'POST'])
 def index():
 	users = User.query.all()
-	online = 0
-	for user in users:
-		if user.state == 1:
-			online += 1
+	if config.showOnline == True:
+		online = 0
+		for user in users:
+			if user.state == 1:
+				online += 1
+	else:
+		online = 'None'
 	return render_template('index.html', users=users, online=online)
 @main.route('/create', methods=['GET', 'POST'])
 def create_account():
@@ -91,18 +94,25 @@ def edit_character(id):
 	return render_template('edit_char.html', form=form, character=character)
 @main.route('/delete/character/<int:id>', methods=['GET', 'POST'])
 def delete_character(id):
-	character=Character.query.get_or_404(id)
-	
-	db.session.add(character)
-	db.session.delete(character)
-	db.session.commit()
-	flash('Success.')
-	return redirect(url_for('main.characters'))
+	if config.deleteCharacterOption == True:
+		character=Character.query.get_or_404(id)
+		db.session.add(character)
+		db.session.delete(character)
+		db.session.commit()
+		flash('Success.')
+		return redirect(url_for('main.characters'))
+	else:
+		flash('Now allowed. Check config file.')
+		return redirect(url_for('main.characters'))
 @main.route('/delete/account/<int:id>', methods=['GET', 'POST'])
 def delete_account(id):
-	account=User.query.get_or_404(id)
-	db.session.add(account)
-	db.session.delete(account)
-	db.session.commit()
-	flash('Success.')
-	return redirect(url_for('main.index'))
+	if config.deleteAccountOption == True:
+		account=User.query.get_or_404(id)
+		db.session.add(account)
+		db.session.delete(account)
+		db.session.commit()
+		flash('Success.')
+		return redirect(url_for('main.index'))
+	else:
+		flash('Now allowed. Check config file.')
+		return redirect(url_for('main.index'))
