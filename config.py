@@ -20,7 +20,7 @@ class Config:
 		pass
 
 class DevelopmentConfig(Config):
-		DEBUG = False
+		DEBUG = True
 		MAIL_SERVER = 'smtp.example.com'
 		MAIL_PORT = '465'
 		MAIL_USE_SSL = True
