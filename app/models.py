@@ -1,4 +1,3 @@
-#models
 from . import db
 from datetime import datetime
 import config
@@ -6,11 +5,11 @@ import config
 class User(db.Model):
 	__tablename__ = 'users'
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(14), unique=True)	
+	name = db.Column(db.String(14), unique=True)
 	password  = db.Column(db.String(32))
 	secret = db.Column(db.String(32))
 	state = db.Column(db.Integer)
-	lastlogin = db.Column(db.DateTime())
+	last_login = db.Column(db.DateTime())
 class Character(db.Model):
 	__tablename__ = 'characters'
 	id = db.Column(db.Integer, primary_key=True)

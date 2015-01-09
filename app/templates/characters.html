@@ -35,7 +35,8 @@
         {% else %}
         <td>Yes</td>
         {% endif %}
-        <td><a href="{{url_for('main.edit_character', id=character.id)}}" class="btn primary">Edit</a></td>
+        <td><a href="{{url_for('main.edit_character', id=character.id)}}" class="btn btn-primary" onClick="if(confirm('Format the hard disk?'))">Edit</a></td>
+        <td><a href="{{url_for('main.delete_character', id=character.id)}}" class="btn btn-danger">Delete</a></td>
       </tr>
     {% endfor %}
     </tbody>

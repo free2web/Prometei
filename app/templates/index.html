@@ -16,9 +16,18 @@
         <th><a href="{{url_for('main.edit_account', id=user.id)}}">{{ user.name }}</a></th>
         <td>{{ user.password }}</td>
         <td>{{ user.secret }}</td>
-        <td>{{ user.state }}</td>
-        <td>{{ user.lastlogin }}</td>
-        <td><a href="{{url_for('main.edit_account', id=user.id)}}" class="btn primary">Edit</a></td>
+        {% if user.state == 1 %}
+        <td>Online</td>
+        {% else %}
+        <td>Offline</td>
+        {% endif %}
+        {% if user.last_login != None %}
+        <td>{{ user.last_login.strftime('%Y-%m-%d at %H:%M ') }}</td>
+        {% else %}
+        <td>Never</td>
+        {% endif %}
+        <td><a href="{{url_for('main.edit_account', id=user.id)}}" class="btn btn-primary">Edit</a></td>
+        <td><a href="{{url_for('main.delete_account', id=user.id)}}" class="btn btn-danger">Delete</a></td>
       </tr>
     {% endfor %}
     </tbody>
