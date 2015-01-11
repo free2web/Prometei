@@ -10,10 +10,7 @@
 
 
 {% block content %}
-{% if current_user.is_authenticated() and admin == True%}
-    <h1>Create new character</h1>
+    
 	{{ wtf.quick_form(form) }}
-{% else %}
-	<h1>You have not permissions to create new characters</h1>
-{% endif %}
+
 {% endblock %}

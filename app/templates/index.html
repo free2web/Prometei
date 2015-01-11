@@ -3,16 +3,20 @@
 {% block page_header %}
 <div class="page-header">
 {% for message in get_flashed_messages() %}
-  <div class="alert alert-info">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <div class="alert alert-info alert-dismissible" role="alert">
+    <button type"button" class="close" data-dismiss="alert">&times;</button>
   {{ message }}
   {% endfor %}</div>
 </div>
 {% endblock %}
 {% block content %}
+{% if current_user.is_authenticated() and admin == True %}
+
     {% if online != 'None' %}
     <h3>Current online: {{online}}</h3>
     {% endif %}
+    
+    Logged as:  {{current_user.username}}. Game account: {{current_user.account_name.name}}
 	  <table  class="table table-hover">
     <thead>
       <th>Username</th>
@@ -52,4 +56,11 @@
     </tbody>
   </table>
  
-{% endblock %}
+ {% elif current_user.is_authenticated() and admin == False%}
+
+ <h1>Nothing. You not an admin</h1>
+ {% else %}
+  <h1>Please <a href="{{url_for('auth.login')}}">login</a> or <a href="{{url_for('auth.register')}}">register</a></h1>
+ {% endif %}
+
+{%endblock%}

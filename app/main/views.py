@@ -3,14 +3,16 @@
 from datetime import datetime
 from flask import render_template, session, redirect, url_for, abort, g, current_app, flash, request
 from . import main
+from flask.ext.login import login_user, logout_user, login_required, current_user
 from .. import db
-from ..models import User, Character
-from .forms import CreateAccountForm, EditAccountForm, EditCharacterForm, CreateCharacterForm
+from ..models import User, Character, WebUser
+from .forms import CreateAccountForm, EditAccountForm, EditCharacterForm, CreateCharacterForm, ConnectForm
 import hashlib
 import config
 @main.route('/', methods=['GET', 'POST'])
 def index():
 	users = User.query.all()
+	webusers = WebUser.query.all()
 	if config.showOnline == True:
 		online = 0
 		for user in users:
@@ -26,9 +28,21 @@ def index():
 		showSecrets = True
 	else:
 		showSecrets = False
-	return render_template('index.html', users=users, online=online, showPasswords=showPasswords, showSecrets=showSecrets)
+	if current_user.is_authenticated():
+		print current_user.username
+	else:
+		print 'Not authenticated'
+	if current_user.username in config.admins:
+		admin = True
+	else:
+		admin = False
+	return render_template('index.html', users=users, online=online, admin=admin, showPasswords=showPasswords, showSecrets=showSecrets, webusers=webusers)
 @main.route('/create', methods=['GET', 'POST'])
 def create_account():
+	if current_user.username in config.admins:
+		admin = True
+	else:
+		admin = False
 	form = CreateAccountForm()
 	if form.validate_on_submit():
 		newAccount = User(name=form.name.data, password=hashlib.md5(form.password.data).hexdigest(), 
@@ -39,9 +53,13 @@ def create_account():
 		flash(u'Account created!')
 		return redirect(url_for('.index'))
 	
-	return render_template('create.html', form=form)
+	return render_template('create.html', form=form, admin=admin)
 @main.route('/create-char', methods=['GET', 'POST'])
 def create_char():
+	if current_user.username in config.admins:
+		admin = True
+	else:
+		admin = False
 	form = CreateCharacterForm()
 	if form.validate_on_submit():
 		newChar = Character(account_id=form.account_id.data, name=form.name.data, job=0, race=form.race.data, level=form.level.data, map="Argent City", 
@@ -50,7 +68,7 @@ def create_char():
 		db.session.commit()
 		flash('Character created!')
 		return redirect(url_for('.index'))
-	return render_template('char_create.html', form=form)
+	return render_template('char_create.html', form=form, admin=admin)
 @main.route('/characters')
 def characters():
 	characters = Character.query.all()
@@ -96,7 +114,6 @@ def edit_character(id):
 			character.con = 1
 			character.spr = 1
 			character.acc = 1
-
 			db.session.add(character)
 			db.session.commit()
 			flash(u'Character updated')
@@ -117,7 +134,7 @@ def delete_character(id):
 		flash('Success.')
 		return redirect(url_for('main.characters'))
 	else:
-		flash('Now allowed. Check config file.')
+		flash('Not allowed. Check config file.')
 		return redirect(url_for('main.characters'))
 @main.route('/delete/account/<int:id>', methods=['GET', 'POST'])
 def delete_account(id):
@@ -129,5 +146,27 @@ def delete_account(id):
 		flash('Success.')
 		return redirect(url_for('main.index'))
 	else:
-		flash('Now allowed. Check config file.')
+		flash('Not allowed. Check config file.')
 		return redirect(url_for('main.index'))
+@main.route('/connect', methods=['GET', 'POST'])
+@login_required
+def connect():
+	form = ConnectForm()
+	if form.validate_on_submit():
+		web_user = WebUser.query.filter_by(username=current_user.username).first()
+		game_user = User.query.filter_by(name=form.game_account_id.data).first()
+		
+		if web_user and game_user is not None and hashlib.md5(form.game_account_password.data).hexdigest() == game_user.password:
+			
+			web_user.game_account_id = game_user.id
+			db.session.add(web_user)
+			db.session.commit()
+			flash('Success')
+			return redirect(url_for('main.index'))
+		flash('wrong username or password')
+	return render_template('connect.html', form=form)
+@main.route('/my-characters')
+@login_required
+def user_characters():
+	characters = Character.query.filter_by(account_id=current_user.game_account_id).all()
+	return render_template('user_chars.html', characters=characters)
